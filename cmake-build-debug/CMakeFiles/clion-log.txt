@@ -1,0 +1,5 @@
+/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/Applications/CLion.app/Contents/bin/ninja/mac/ninja -G Ninja -S /Users/tomaspetricek/Programming/Languages/Cpp/projects/red-black-tree -B /Users/tomaspetricek/Programming/Languages/Cpp/projects/red-black-tree/cmake-build-debug
+-- Found Boost: /usr/local/lib/cmake/Boost-1.82.0/BoostConfig.cmake (found version "1.82.0") found components: unit_test_framework 
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /Users/tomaspetricek/Programming/Languages/Cpp/projects/red-black-tree/cmake-build-debug

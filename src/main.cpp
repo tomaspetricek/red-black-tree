@@ -4,7 +4,7 @@
 
 int main()
 {
-    top::red_black_tree<int> tree;
+    top::red_black::tree<int> tree;
     tree.contains(10);
     tree.insert(10);
     tree.insert(20);

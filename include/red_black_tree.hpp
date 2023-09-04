@@ -7,73 +7,75 @@
 
 #include <binary_search_tree.hpp>
 
-namespace top {
+namespace top::red_black {
+    enum colors {
+        red, black
+    };
+
     template<class T>
-    class red_black_tree : public binary_search_tree<T> {
-        struct node : public binary_search_tree<T>::node {
-            enum colors {
-                red, black
-            };
-            colors color;
+    struct node : public binary_search::node<T, node> {
+        colors color;
 
-            explicit node(T value, colors color)
-                    :binary_search_tree<T>::node{value}, color{color} { }
+        explicit node(T value, colors color)
+                :binary_search::node<T, node>{value}, color{color} { }
+    };
 
-            ~node() override = default;
-        };
+    template<class T>
+    class tree : public binary_search::tree<T, node> {
+        using node_ptr = node<T>*;
 
-        void rotate_left(node* curr)
+        void rotate_left(node_ptr curr)
         {
 
         }
 
-        void rotate_right(node* curr)
+        void rotate_right(node_ptr curr)
         {
 
         }
 
-        void rotate_left_right(node* curr)
+        void rotate_left_right(node_ptr curr)
         {
 
         }
 
-        void rotate_right_left(node* curr)
+        void rotate_right_left(node_ptr curr)
         {
 
         }
 
-        node* rotate(node* curr)
+        node_ptr rotate(node_ptr curr)
         {
 
         }
 
-        node* insert(node* curr, const T& value)
+        node_ptr insert(node_ptr curr, const T& value)
         {
             if (curr) {
                 if (curr->value==value) {
                     return curr;
                 }
                 if (curr->value>value) {
-                    curr->left = insert(static_cast<node*>(curr->left), value);
+                    curr->left = insert(curr->left, value);
                 }
                 else {
-                    curr->right = insert(static_cast<node*>(curr->right), value);
+                    curr->right = insert(curr->right, value);
                 }
                 //
                 return curr;
             }
             this->size_++;
-            return new node{value, node::colors::red};
+            return new node{value, colors::red};
         }
 
     public:
         void insert(const T& value)
         {
             if (this->root_) {
-                insert(static_cast<node*>(this->root_), value);
+                insert(this->root_, value);
             }
             else {
-                this->root_ = new node{value, node::colors::black};
+                this->root_ = new node{value, colors::black};
                 this->size_++;
             }
         }

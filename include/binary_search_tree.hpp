@@ -7,24 +7,26 @@
 
 #include <cstddef>
 
-namespace top {
-    template<class T>
-    class binary_search_tree {
+namespace top::binary_search {
+    template<class T, template<class> class Node>
+    struct node {
+        using node_ptr = Node<T>*;
+        T value;
+        node_ptr right{nullptr}, left{nullptr};
+
+        explicit node(const T& value)
+                :value(value) { }
+    };
+
+    template<class T, template<class> class Node>
+    class tree {
+        using node_ptr = Node<T>*;
+
     protected:
-        struct node {
-            T value;
-            node* right{nullptr}, * left{nullptr};
-
-            explicit node(T value)
-                    :value(value) { }
-
-            virtual ~node() = default;
-        };
-
-        node* root_{nullptr};
+        node_ptr root_{nullptr};
         std::size_t size_{0};
 
-        bool same(node* lhs, node* rhs)
+        bool same(node_ptr lhs, node_ptr rhs)
         {
             if (!lhs || !rhs) {
                 return lhs==lhs;
@@ -32,7 +34,7 @@ namespace top {
             return (lhs->value==rhs->value) && same(lhs->right, rhs->right) && same(lhs->left, rhs->left);
         }
 
-        void clear(node*& curr)
+        void clear(node_ptr& curr)
         {
             if (curr) {
                 clear(curr->left);
@@ -45,19 +47,19 @@ namespace top {
         using value_type = T;
         using size_type = std::size_t;
 
-        bool operator==(const binary_search_tree& rhs) const
+        bool operator==(const tree& rhs) const
         {
             return same(root_, rhs.root_);
         }
 
-        bool operator!=(const binary_search_tree& rhs) const
+        bool operator!=(const tree& rhs) const
         {
             return !(rhs==*this);
         }
 
         bool contains(const T& value) const
         {
-            node* curr{root_};
+            node_ptr curr{root_};
             while (curr) {
                 if (curr->value==value) {
                     return true;
@@ -89,7 +91,7 @@ namespace top {
             return !root_;
         }
 
-        ~binary_search_tree()
+        ~tree()
         {
             clear();
         }

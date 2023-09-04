@@ -10,10 +10,17 @@
 namespace top {
     template<class T>
     class binary_search_tree {
+    protected:
         struct node {
             T value;
             node* right{nullptr}, * left{nullptr};
+
+            explicit node(T value)
+                    :value(value) { }
+
+            virtual ~node() = default;
         };
+
         node* root_{nullptr};
         std::size_t size_{0};
 

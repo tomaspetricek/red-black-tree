@@ -6,9 +6,11 @@
 #define RED_BLACK_TREE_RED_BLACK_TREE_HPP
 
 #include <binary_search_tree.hpp>
+#include <cstddef>
+#include <type_traits>
 
 namespace top::red_black {
-    enum colors {
+    enum colors : std::underlying_type<std::byte>::type {
         red, black
     };
 

@@ -11,6 +11,7 @@ namespace top::binary_search {
     template<class T, template<class> class Node>
     struct node {
         using node_ptr = Node<T>*;
+
         T value;
         node_ptr right{nullptr}, left{nullptr};
 
@@ -20,13 +21,14 @@ namespace top::binary_search {
 
     template<class T, template<class> class Node>
     class tree {
-        using node_ptr = Node<T>*;
-
     protected:
+        using node_t = Node<T>;
+        using node_ptr = node_t*;
+
         node_ptr root_{nullptr};
         std::size_t size_{0};
 
-        bool same(node_ptr lhs, node_ptr rhs)
+        bool same(const node_t* const lhs, const node_t* const rhs)
         {
             if (!lhs || !rhs) {
                 return lhs==lhs;

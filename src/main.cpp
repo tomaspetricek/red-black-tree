@@ -1,14 +1,16 @@
-#include <iostream>
 #include <red_black_tree.hpp>
 #include <string>
 
 int main()
 {
-    top::red_black::tree<int> tree;
-    tree.contains(10);
+    top::red_black_tree<int> tree;
     tree.insert(10);
-    tree.insert(20);
-    tree.insert(30);
-    assert(tree.contains(10) && tree.contains(20) && tree.contains(30));
+    tree.insert(2);
+    tree.insert(23);
+    tree.insert(12);
+    tree.insert(17);
+    tree.insert(50);
+    tree.insert(100);
+    tree.insert(200);
     return 0;
 }

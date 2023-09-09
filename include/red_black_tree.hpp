@@ -8,6 +8,8 @@
 #include <binary_search_tree.hpp>
 #include <cstddef>
 #include <type_traits>
+#include <cassert>
+#include <iostream>
 
 namespace top {
     namespace red_black {
@@ -101,7 +103,7 @@ namespace top {
                 while (curr!=this->root_ && curr->color==colors::red && curr->parent->color==colors::red) {
                     parent = curr->parent;
                     grand_parent = parent->parent;
-                    if (curr->parent==grand_parent->left) {
+                    if (parent==grand_parent->left) {
                         uncle = grand_parent->right;
                         if (get_color(uncle)==colors::red) {
                             parent->color = colors::black;
@@ -142,7 +144,47 @@ namespace top {
                 this->root_->color = colors::black;
             }
 
+            static int is_valid(const node_t* const curr)
+            {
+                bool valid{true};
+                int right_black_count, left_black_count;
+                right_black_count = left_black_count = 1;
+                if (curr) {
+                    if (curr->right) {
+                        valid &= curr->right->value>curr->value && curr->right->parent==curr;
+                        if (valid && curr->right->parent->color==colors::red) {
+                            valid &= curr->right->color==colors::black;
+                        }
+                        if (valid) {
+                            right_black_count = is_valid(curr->right);
+                            valid &= right_black_count>0;
+                        }
+                    }
+                    if (valid && curr->left) {
+                        valid &= curr->left->value<curr->value && curr->left->parent==curr;
+                        if (valid && curr->left->parent->color==colors::red) {
+                            valid &= curr->left->color==colors::black;
+                        }
+                        if (valid) {
+                            left_black_count = is_valid(curr->left);
+                            valid &= left_black_count>0;
+                        }
+                    }
+                    return (valid && left_black_count==right_black_count) ? left_black_count
+                            +(curr->color==colors::black) : 0;
+                }
+                return 1;
+            }
+
         public:
+            static bool is_valid(const tree& tree)
+            {
+                if (tree.root_) {
+                    return tree.root_->color==colors::black && !tree.root_->parent && is_valid(tree.root_);
+                }
+                return true;
+            }
+
             void insert(const T& value)
             {
                 if (this->root_) {

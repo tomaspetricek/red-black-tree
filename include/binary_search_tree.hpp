@@ -28,14 +28,6 @@ namespace top::binary_search {
         node_ptr root_{nullptr};
         std::size_t size_{0};
 
-        bool same(const node_t* const lhs, const node_t* const rhs)
-        {
-            if (!lhs || !rhs) {
-                return lhs==lhs;
-            }
-            return (lhs->value==rhs->value) && same(lhs->right, rhs->right) && same(lhs->left, rhs->left);
-        }
-
         void clear(node_ptr& curr)
         {
             if (curr) {
@@ -48,16 +40,6 @@ namespace top::binary_search {
     public:
         using value_type = T;
         using size_type = std::size_t;
-
-        bool operator==(const tree& rhs) const
-        {
-            return same(root_, rhs.root_);
-        }
-
-        bool operator!=(const tree& rhs) const
-        {
-            return !(rhs==*this);
-        }
 
         bool contains(const T& value) const
         {

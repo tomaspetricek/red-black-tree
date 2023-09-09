@@ -199,6 +199,55 @@ namespace top {
             }
 
         public:
+            class builder {
+                const std::pair<T, colors> empty_;
+
+            public:
+                using data_type = std::pair<T, colors>;
+
+                explicit builder(const T empty)
+                        :empty_{empty, colors::black} { }
+
+                const data_type& empty() const
+                {
+                    return empty_;
+                }
+
+                tree from_level_order(const std::vector<data_type>& vals) const
+                {
+                    tree tree;
+                    if (vals.empty()) {
+                        return tree;
+                    }
+                    tree.root_ = new node_t{vals.front().first, nullptr, vals.front().second};
+                    std::queue<node_ptr> parents;
+                    parents.push(tree.root_);
+                    node_ptr parent;
+                    std::size_t i{1};
+
+                    // build
+                    while (!parents.empty() && i<vals.size()) {
+                        parent = parents.front();
+                        parents.pop();
+
+                        // add left child
+                        if (vals[i]!=empty_ && i<vals.size()) {
+                            parent->left = new node_t{vals[i].first, parent, vals[i].second};
+                            parents.push(parent->left);
+                        }
+                        i++;
+
+                        // add right child
+                        if (vals[i]!=empty_ && i<vals.size()) {
+                            parent->right = new node_t{vals[i].first, parent, vals[i].second};
+                            parents.push(parent->right);
+                        }
+                        i++;
+                    }
+                    return tree;
+                }
+            };
+
             bool operator==(const tree& rhs) const
             {
                 return same(this->root_, rhs.root_);
@@ -253,59 +302,6 @@ namespace top {
             void erase(const T& value)
             {
 
-            }
-        };
-
-        template<class T>
-        class builder {
-            const std::pair<T, colors> empty_;
-            using tree_t = tree<T>;
-            using node_t = typename tree_t::node_t;
-            using node_ptr = typename tree_t::node_ptr;
-
-        public:
-            using data_type = std::pair<T, colors>;
-
-            explicit builder(const T empty)
-                    :empty_{empty, colors::black} { }
-
-            const data_type& empty() const
-            {
-                return empty_;
-            }
-
-            tree<T> from_level_order(const std::vector<data_type>& vals) const
-            {
-                tree<T> tree;
-                if (vals.empty()) {
-                    return tree;
-                }
-                tree.root_ = new node_t{vals.front().first, nullptr, vals.front().second};
-                std::queue<node_ptr> parents;
-                parents.push(tree.root_);
-                node_ptr parent;
-                std::size_t i{1};
-
-                // build
-                while (!parents.empty() && i<vals.size()) {
-                    parent = parents.front();
-                    parents.pop();
-
-                    // add left child
-                    if (vals[i]!=empty_ && i<vals.size()) {
-                        parent->left = new node_t{vals[i].first, parent, vals[i].second};
-                        parents.push(parent->left);
-                    }
-                    i++;
-
-                    // add right child
-                    if (vals[i]!=empty_ && i<vals.size()) {
-                        parent->right = new node_t{vals[i].first, parent, vals[i].second};
-                        parents.push(parent->right);
-                    }
-                    i++;
-                }
-                return tree;
             }
         };
     }

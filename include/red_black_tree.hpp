@@ -198,6 +198,11 @@ namespace top {
                         && same(lhs->left, rhs->left);
             }
 
+            bool same(const tree& rhs, const tree& lhs) const
+            {
+                return rhs.size_==lhs.size_ && same(rhs.root_, lhs.root_);
+            }
+
         public:
             class builder {
                 const std::pair<T, colors> empty_;
@@ -220,6 +225,7 @@ namespace top {
                         return tree;
                     }
                     tree.root_ = new node_t{vals.front().first, nullptr, vals.front().second};
+                    tree.size_++;
                     std::queue<node_ptr> parents;
                     parents.push(tree.root_);
                     node_ptr parent;
@@ -234,6 +240,7 @@ namespace top {
                         if (vals[i]!=empty_ && i<vals.size()) {
                             parent->left = new node_t{vals[i].first, parent, vals[i].second};
                             parents.push(parent->left);
+                            tree.size_++;
                         }
                         i++;
 
@@ -241,6 +248,7 @@ namespace top {
                         if (vals[i]!=empty_ && i<vals.size()) {
                             parent->right = new node_t{vals[i].first, parent, vals[i].second};
                             parents.push(parent->right);
+                            tree.size_++;
                         }
                         i++;
                     }
@@ -250,7 +258,7 @@ namespace top {
 
             bool operator==(const tree& rhs) const
             {
-                return same(this->root_, rhs.root_);
+                return same(*this, rhs);
             }
 
             bool operator!=(const tree& rhs) const

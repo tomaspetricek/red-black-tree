@@ -5,7 +5,6 @@
 #ifndef RED_BLACK_TREE_RED_BLACK_TREE_HPP
 #define RED_BLACK_TREE_RED_BLACK_TREE_HPP
 
-#include <binary_search_tree.hpp>
 #include <cstddef>
 #include <type_traits>
 #include <vector>
@@ -18,24 +17,31 @@ namespace top {
         };
 
         template<class T>
-        struct node : public binary_search::node<T, node> {
+        struct node {
             using node_ptr = node<T>*;
-            node_ptr parent{nullptr};
+
+            T value;
+            node_ptr right{nullptr}, left{nullptr}, parent{nullptr};
             colors color{colors::red};
 
+            explicit node(const T& value)
+                    :value(value) { }
+
             explicit node(const T& value, node_ptr parent, colors color = colors::red)
-                    :binary_search::node<T, node>{value}, parent{parent}, color{color} { }
+                    :value{value}, parent{parent}, color{color} { }
         };
 
         template<class T>
-        class tree : public binary_search::tree<T, node> {
-            using base_t = typename binary_search::tree<T, node>;
-            using node_t = typename base_t::node_t;
-            using node_ptr = typename base_t::node_ptr;
+        class tree {
+            using node_t = node<T>;
+            using node_ptr = node_t*;
 
             template<class U>
             friend
             class builder;
+
+            node_ptr root_{nullptr};
+            std::size_t size_{0};
 
             colors get_color(const node_t* const curr)
             {
@@ -72,8 +78,8 @@ namespace top {
                 right->left = curr;
 
                 // link root
-                if (curr==this->root_) {
-                    this->root_ = right;
+                if (curr==root_) {
+                    root_ = right;
                 }
                 return right;
             }
@@ -101,8 +107,8 @@ namespace top {
                 left->right = curr;
 
                 // link root
-                if (curr==this->root_) {
-                    this->root_ = left;
+                if (curr==root_) {
+                    root_ = left;
                 }
                 return left;
             }
@@ -110,7 +116,7 @@ namespace top {
             void fix_after_insertion(node_ptr curr)
             {
                 node_ptr parent, grand_parent, uncle;
-                while (curr!=this->root_ && curr->color==colors::red && curr->parent->color==colors::red) {
+                while (curr!=root_ && curr->color==colors::red && curr->parent->color==colors::red) {
                     parent = curr->parent;
                     grand_parent = parent->parent;
 
@@ -152,7 +158,7 @@ namespace top {
                         }
                     }
                 }
-                this->root_->color = colors::black;
+                root_->color = colors::black;
             }
 
             static int is_valid(const node_t* const curr)
@@ -201,6 +207,32 @@ namespace top {
             bool same(const tree& rhs, const tree& lhs) const
             {
                 return rhs.size_==lhs.size_ && same(rhs.root_, lhs.root_);
+            }
+
+            void clear(node_ptr& curr)
+            {
+                if (curr) {
+                    clear(curr->left);
+                    clear(curr->right);
+                    delete curr;
+                }
+            }
+
+            static node_ptr copy(const node_t* const src)
+            {
+                if (src) {
+                    auto dest = new node_t{*src};
+                    if (src->left) {
+                        dest->left = copy(src->left);
+                        dest->left->parent = dest;
+                    }
+                    if (src->right) {
+                        dest->right = copy(src->right);
+                        dest->right->parent = dest;
+                    }
+                    return dest;
+                }
+                return nullptr;
             }
 
         public:
@@ -256,6 +288,46 @@ namespace top {
                 }
             };
 
+            using value_type = T;
+            using size_type = std::size_t;
+
+            tree() noexcept = default;
+
+            tree(const tree& src)
+                    :root_{copy(src.root_)}, size_{src.size_} { }
+
+            tree& operator=(const tree& rhs)
+            {
+                if (&rhs!=this) {
+                    // copy-and-swap idiom
+                    tree temp{rhs};
+                    swap(temp);
+                }
+                return *this;
+            }
+
+            tree(tree&& src) noexcept
+                    :root_{src.root_}, size_{src.size_}
+            {
+                src.root_ = nullptr;
+                src.size_ = 0;
+            }
+
+            tree& operator=(tree&& rhs)
+            {
+                if (&rhs!=this) {
+                    tree temp{std::move(rhs)};
+                    swap(temp);
+                }
+                return *this;
+            }
+
+            void swap(tree& other) noexcept
+            {
+                std::swap(root_, other.root_);
+                std::swap(size_, other.size_);
+            }
+
             bool operator==(const tree& rhs) const
             {
                 return same(*this, rhs);
@@ -276,8 +348,8 @@ namespace top {
 
             void insert(const T& value)
             {
-                if (this->root_) {
-                    node_ptr curr{this->root_}, parent{nullptr};
+                if (root_) {
+                    node_ptr curr{root_}, parent{nullptr};
 
                     // reach leaf
                     while (curr) {
@@ -302,14 +374,53 @@ namespace top {
                     }
                 }
                 else {
-                    this->root_ = new node_t{value, nullptr, colors::black};
+                    root_ = new node_t{value, nullptr, colors::black};
                 }
-                this->size_++;
+                size_++;
             }
 
             void erase(const T& value)
             {
 
+            }
+
+            bool contains(const T& value) const
+            {
+                node_ptr curr{root_};
+                while (curr) {
+                    if (curr->value==value) {
+                        return true;
+                    }
+                    if (curr->value>value) {
+                        curr = curr->left;
+                    }
+                    else {
+                        curr = curr->right;
+                    }
+                }
+                return false;
+            }
+
+            void clear()
+            {
+                clear(root_);
+                root_ = nullptr;
+                size_ = 0;
+            }
+
+            std::size_t size() const
+            {
+                return size_;
+            }
+
+            bool empty() const
+            {
+                return !root_;
+            }
+
+            ~tree()
+            {
+                clear();
             }
         };
     }

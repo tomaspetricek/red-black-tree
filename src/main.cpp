@@ -33,5 +33,7 @@ int main()
     };
     auto expect_tree = builder.from_level_order(data);
     assert(expect_tree==actual_tree);
+    auto copy{expect_tree};
+    assert(expect_tree==copy);
     return 0;
 }

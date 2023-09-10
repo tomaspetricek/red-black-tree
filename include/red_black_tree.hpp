@@ -350,7 +350,6 @@ namespace top {
             {
                 if (root_) {
                     node_ptr curr{root_}, parent{nullptr};
-
                     // reach leaf
                     while (curr) {
                         parent = curr;
@@ -364,14 +363,16 @@ namespace top {
                             curr = curr->right;
                         }
                     }
+
+                    // add node
+                    auto child = new node_t{value, parent};
                     if (parent->value>value) {
-                        parent->left = new node_t{value, parent};
-                        fix_after_insertion(parent->left);
+                        parent->left = child;
                     }
                     else {
-                        parent->right = new node_t{value, parent};
-                        fix_after_insertion(parent->right);
+                        parent->right = child;
                     }
+                    fix_after_insertion(child);
                 }
                 else {
                     root_ = new node_t{value, nullptr, colors::black};
